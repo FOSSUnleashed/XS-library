@@ -135,6 +135,8 @@ fn %terminal-of-pid {|pid|
 			(ppid comm cpid) = `{ps -o ppid=,comm=,pid= $pid}
 			pid = $ppid
 		}
-		if {~ $comm st} {echo $cpid}
+		if {~ $comm st} {
+			wmctrl -lp|grep '^[^ ]\+ \+ [^ ]\+ \+'^$cpid|cut -d' ' -f1
+		}
 	}
 }
