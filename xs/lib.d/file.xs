@@ -12,7 +12,9 @@ fn %with-tempfile {|name body|
 fn %with-suffixed-tempfile {|name suffix body|
 	# Bind a temporary file to name while evaluating body.
 	# The file is named using the given suffix.
-	local ($name = `{mktemp -t XXXXXXXXXX^$suffix}) {
+	local (sfo = $suffix; sfn = `{echo $suffix|tr X x}; $name = `mktemp) {
+		mv -n $($name) <={$name = `{dirname $($name)}^/ \
+					^`{basename $($name) $sfn}^$sfo}
 		unwind-protect {
 			$body
 		} {
