@@ -129,14 +129,15 @@ fn %wt-pager {|lessopts|
 }
 
 fn %terminal-of-pid {|pid|
-	# Print window ID of terminal running given PID.
+	# Print the PID and window ID of the terminal running a given PID.
 	let (ppid; comm; cpid) {
 		until {{~ $ppid 1} || {~ $comm st}} {
 			(ppid comm cpid) = `{ps -o ppid=,comm=,pid= $pid}
 			pid = $ppid
 		}
 		if {~ $comm st} {
-			wmctrl -lp|grep '^[^ ]\+ \+ [^ ]\+ \+'^$cpid|cut -d' ' -f1
+			echo $cpid `{wmctrl -lp|grep '^[^ ]\+ \+ [^ ]\+ \+' \
+							^$cpid|cut -d' ' -f1}
 		}
 	}
 }
