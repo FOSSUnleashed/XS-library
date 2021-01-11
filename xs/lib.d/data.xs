@@ -18,25 +18,25 @@ let (g = 0) {
 }
 
 fn %with-gensyms {|names-and-body|
-        # Execute body in an environment in which each word in names
-        # is bound to a gensym.
-                let (args = $names-and-body; names; body; \
-                fn-_mkbindings = {|l|
-                        let (bl) {
-                                for n $l {bl = $bl $n\ \=\ ^<=%gensym}
-                                result <={%flatten \; $bl}
-                        }
-                } \
-                ) {
-                        while {!~ $#args 1 0} {
-                                names = $names $args(1)
-                                args = $args(2 ...)
-                        }
-                        body = $args
-                        eval local \(<={_mkbindings $names}\) {
-                                $body
-                        }
-                }
+	# Execute body in an environment in which each word in names
+	# is bound to a gensym.
+	let (args = $names-and-body; names; body; \
+	fn-_mkbindings = {|l|
+		let (bl) {
+			for n $l {bl = $bl $n\ \=\ ^<=%gensym}
+			result <={%flatten \; $bl}
+		}
+	} \
+	) {
+		while {!~ $#args 1 0} {
+			names = $names $args(1)
+			args = $args(2 ...)
+		}
+		body = $args
+		eval local \(<={_mkbindings $names}\) {
+			$body
+		}
+	}
 }
 
 fn %list {|*|
