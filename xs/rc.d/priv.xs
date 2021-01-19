@@ -61,7 +61,7 @@ fn intel_gpu_top {|*|
 	.f 'wrap'
 	%with-terminal intel_gpu_top %with-quit {
 		sudo /usr/bin/intel_gpu_top -d `{/usr/bin/intel_gpu_top -L \
-						|grep '^[^ ]'|sort|head -1} \
+			|grep '^[^ ]'|sort|head -1|grep -o '[^ ]\+:.*$'} \
 			$*
 	}
 }
