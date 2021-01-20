@@ -74,20 +74,26 @@ fn %read-char {
 		unwind-protect {
 			</dev/tty $&tctl raw
 			c = <={$&getc </dev/tty}
-			oc = `{%ord $c}
-			if {$oc :le 127} {
+			if {~ $c ''} {
+				# XS never sees a NUL character.
+				# $&getc returns NUL (^@) as the empty word ''.
 				r = $c
-			} else if {$oc :ge 248} {
-				throw error %read-char 'Invalid UTF-8'
-			} else if {$oc :ge 240} {
-				r = $c^<={$&getc </dev/tty}
-				r = $c^<={$&getc </dev/tty}
-				r = $c^<={$&getc </dev/tty}
-			} else if {$oc :ge 224} {
-				r = $c^<={$&getc </dev/tty}
-				r = $c^<={$&getc </dev/tty}
-			} else if {$oc :ge 112} {
-				r = $c^<={$&getc </dev/tty}
+			} else {
+				oc = `{%ord $c}
+				if {$oc :le 127} {
+					r = $c
+				} else if {$oc :ge 248} {
+					throw error %read-char 'Invalid UTF-8'
+				} else if {$oc :ge 240} {
+					r = $c^<={$&getc </dev/tty}
+					r = $c^<={$&getc </dev/tty}
+					r = $c^<={$&getc </dev/tty}
+				} else if {$oc :ge 224} {
+					r = $c^<={$&getc </dev/tty}
+					r = $c^<={$&getc </dev/tty}
+				} else if {$oc :ge 112} {
+					r = $c^<={$&getc </dev/tty}
+				}
 			}
 		} {
 			</dev/tty $&tctl canon
