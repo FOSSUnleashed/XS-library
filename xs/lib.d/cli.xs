@@ -96,7 +96,6 @@ fn %menu {|*|
 		}
 		escape {|fn-break|
 			while true {
-				(row col) = <=%get-cursor-position
 				escape {|fn-redisplay|
 				tl = `{tput lines}
 				tc = `{tput cols}
@@ -110,11 +109,11 @@ fn %menu {|*|
 					printf %.^$tc^s\n $fl
 					if {$me :gt `($tl-2) \
 							&& ~ `($ml%($tl-2)) 0} {
-						printf '[space:↓]? '
+						(row col) = <=%get-cursor-position
+						printf '[↓:spc]? '
 						c = <=%read-char
 						if {~ $c ' '} {
 							erase
-							#printf \n
 						} else {
 							l =
 							ac = $c
