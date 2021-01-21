@@ -73,30 +73,53 @@ fn %menu {|*|
 	# The action does not have access to lexical variables.
 	# Disposition is either C (continue after action) or B (break
 	# after action). Keystrokes are processed immediately.
-	# These keys are always recognized: Return to draw the menu;
-	# ^L to clear the screen and draw the menu; ^D to exit.
+	# A menu longer than the terminal is tall is paged.
+	# A menu item wider than the terminal is truncated.
+	# These keys are always recognized and must not appear in a menu
+	# tuple: Return to draw the menu; ^L to clear the screen and draw
+	# the menu; ^D to exit; Space to page a long menu.
 	let (hdr; l; mt; ma; key; title; action; cb; c; a; none = <=%gensym; \
 	esc = false; csi = false; csiO = false; csterm = a b c d e f g h i j \
 	k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R \
 	S T U V W X Y Z \~; ctrl = \x01 \x02 \x03 \x05 \x06 \x07 \x08 \x09 \
 	\x0a \x0b \x0c \x0e \x0f \x10 \x11 \x12 \x13 \x14 \x15 \x16 \x17 \
-	\x18 \x1a \x1c \x1d \x1e \x1f; row; col) {
+	\x18 \x1a \x1c \x1d \x1e \x1f; row; col; tl; tc; ml; me; ac; fl) {
 	let (fn-erase = {tput cup `($row-1) `($col-1); tput ed}) {
 		hdr = $*(1); * = $*(2 ...)
 		ma = <=%mkobj
+		me = 0
 		while {!~ $* ()} {
 			(key title action cb) = $*(1 2 3 4); * = $*(5 ...)
 			mt = $mt $key $title
 			%objset $ma $key $action $cb
+			me = `($me+1)
 		}
 		escape {|fn-break|
 			while true {
+				(row col) = <=%get-cursor-position
 				escape {|fn-redisplay|
+				tl = `{tput lines}
+				tc = `{tput cols}
+				ml = 0
 				!~ <={$&len $hdr} 0 && printf %s\n $hdr
 				l = $mt
 				while {!~ $l ()} {
+					ml = `($ml+1)
 					(key title) = $l(1 2); l = $l(3 ...)
-					printf %c\ %s\n $key $title
+					fl = `` \n {printf %c\ %s\n $key $title}
+					printf %.^$tc^s\n $fl
+					if {$me :gt `($tl-2) \
+							&& ~ `($ml%($tl-2)) 0} {
+						printf '[space:↓]? '
+						c = <=%read-char
+						if {~ $c ' '} {
+							erase
+							#printf \n
+						} else {
+							l =
+							ac = $c
+						}
+					}
 				}
 				while true {
 					!$esc && !$csi && !$csiO && {
@@ -104,7 +127,12 @@ fn %menu {|*|
 							<=%get-cursor-position
 						printf \?\ 
 					}
-					c = <=%read-char
+					if {~ $ac ()} {
+						c = <=%read-char
+					} else {
+						c = $ac
+						ac =
+					}
 					!$esc && ~ $c \n && redisplay
 					!$esc && ~ $c \x0c && {
 						clear
@@ -145,6 +173,7 @@ fn %menu {|*|
 							printf \n
 							$a
 							~ $cb B && break
+							redisplay
 						} else {
 							erase
 						}
