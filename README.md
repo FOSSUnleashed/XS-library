@@ -1,3 +1,5 @@
+**NOTICE: As of February 2021 I will no longer maintain the XS project. If you care to assume ownership of this repo, please open an issue.**
+
 This is a collection of library functions written for the `XS` shell
 [https://github.com/TieDyedDevil/XS.git](https://github.com/TieDyedDevil/XS.git) .
 
