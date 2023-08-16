@@ -1,7 +1,5 @@
-**NOTICE: As of February 2021 I will no longer maintain the XS project. If you care to assume ownership of this repo, please open an issue.**
-
 This is a collection of library functions written for the `XS` shell
-[https://github.com/TieDyedDevil/XS.git](https://github.com/TieDyedDevil/XS.git) .
+[https://github.com/FOSSUnleashed/XS.git](https://github.com/FOSSUnleashed/XS.git) .
 
 Note that `XS` must load these library files via its standard initialization
 file: `~/.xsrc`. A sample `~/.xsrc` file is included (as `_xsrc`) for
